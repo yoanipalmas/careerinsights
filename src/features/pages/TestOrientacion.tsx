@@ -6,30 +6,66 @@ import {
   CATEGORIES,
 } from "../data/questions";
 import type { CategoryKey } from "../data/questions";
-import emailjs from 'emailjs-com';
+import { getTopCareers } from "../data/careers";
+import { submitFormspree } from "../../utils/formspree";
+import emailjs from "emailjs-com";
 
 const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const USER_ID = import.meta.env.VITE_EMAILJS_USER_ID;
-
 const TOTAL_QUESTIONS = Object.keys(QUESTIONS).length;
 
+interface StudentData {
+  nombre: string;
+  email: string;
+  edad: string;
+  genero: string;
+  ubicacion: string;
+}
+
+const initialStudent: StudentData = {
+  nombre: "",
+  email: "",
+  edad: "",
+  genero: "",
+  ubicacion: "",
+};
+
+const validateEmail = (email: string) => /^\S+@\S+\.\S+$/.test(email);
+
 export default function TestOrientacion() {
+  const [step, setStep] = useState<"intro" | "registro" | "test" | "result">("intro");
+  const [student, setStudent] = useState<StudentData>(initialStudent);
+  const [studentErrors, setStudentErrors] = useState<Partial<StudentData>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
-  const [showResult, setShowResult] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
-  const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
   const qids = Object.keys(QUESTIONS).map(Number);
   const currentQid = qids[currentIndex];
-  const currentQuestion = QUESTIONS[currentQid];
+  const progress = Math.round((currentIndex / TOTAL_QUESTIONS) * 100);
 
-  // Barra de progreso
-  const progress = Math.round(((currentIndex) / TOTAL_QUESTIONS) * 100);
+  // --- Registro ---
+  const handleStudentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setStudent({ ...student, [e.target.name]: e.target.value });
+    setStudentErrors({ ...studentErrors, [e.target.name]: "" });
+  };
 
+  const handleRegistroSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors: Partial<StudentData> = {};
+    if (!student.nombre) errors.nombre = "Obligatorio";
+    if (!student.email) errors.email = "Obligatorio";
+    else if (!validateEmail(student.email)) errors.email = "Correo inválido";
+    if (!student.edad) errors.edad = "Obligatorio";
+    if (!student.genero) errors.genero = "Obligatorio";
+    if (!student.ubicacion) errors.ubicacion = "Obligatorio";
+    setStudentErrors(errors);
+    if (Object.keys(errors).length === 0) setStep("test");
+  };
+
+  // --- Test ---
   const handleSelect = (value: string) => {
     setAnswers((prev) => ({ ...prev, [currentQid]: value }));
   };
@@ -38,23 +74,16 @@ export default function TestOrientacion() {
     if (currentIndex < TOTAL_QUESTIONS - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      setShowResult(true);
+      setStep("result");
+      sendResults();
     }
   };
 
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((i) => i - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex((i) => i - 1);
   };
 
-  const handleRestart = () => {
-    setAnswers({});
-    setCurrentIndex(0);
-    setShowResult(false);
-  };
-
-  // Lógica de cálculo de resultados
+  // --- Resultados ---
   const getResults = () => {
     const interestScores: { [key in CategoryKey]?: number } = {};
     const aptitudeScores: { [key in CategoryKey]?: number } = {};
@@ -71,7 +100,6 @@ export default function TestOrientacion() {
         }
       }
     }
-    // Top interest
     let topInterest: CategoryKey | null = null;
     let topInterestScore = 0;
     for (const cat in interestScores) {
@@ -80,7 +108,6 @@ export default function TestOrientacion() {
         topInterestScore = interestScores[cat as CategoryKey] || 0;
       }
     }
-    // Top aptitude
     let topAptitude: CategoryKey | null = null;
     let topAptitudeScore = 0;
     for (const cat in aptitudeScores) {
@@ -89,97 +116,203 @@ export default function TestOrientacion() {
         topAptitudeScore = aptitudeScores[cat as CategoryKey] || 0;
       }
     }
-    return {
-      topInterest,
-      topInterestScore,
-      topAptitude,
-      topAptitudeScore,
-      interestScores,
-      aptitudeScores,
-    };
+    return { topInterest, topInterestScore, topAptitude, topAptitudeScore };
   };
 
   const results = getResults();
 
-  const resumenDelResultado = `
-Interés dominante: ${results.topInterest ? CATEGORIES[results.topInterest].name : 'N/A'} (${results.topInterest || ''})
-Puntaje: ${results.topInterestScore}
-Rasgos: ${results.topInterest ? CATEGORIES[results.topInterest].interests.join(", ") : ''}
-
-Aptitud dominante: ${results.topAptitude ? CATEGORIES[results.topAptitude].name : 'N/A'} (${results.topAptitude || ''})
-Puntaje: ${results.topAptitudeScore}
-Rasgos: ${results.topAptitude ? CATEGORIES[results.topAptitude].aptitudes.join(", ") : ''}
-`;
-
-  const sendResultByEmail = () => {
+  const sendResults = async () => {
     setSending(true);
-    emailjs.send(
-      SERVICE_ID,
-      TEMPLATE_ID,
-      {
-        name: 'Participante del Test',      
-        email: email,
-        result: resumenDelResultado,
-      },
-      USER_ID
-    ).then(
-      () => {
-        setSent(true);
-        setSending(false);
-      },
-      () => {
-        alert('Error al enviar el email');
-        setSending(false);
-      }
-    );
+    const { topInterest, topAptitude } = getResults();
+    const resumen = `
+Nombre: ${student.nombre}
+Email: ${student.email}
+Edad: ${student.edad}
+Género: ${student.genero}
+Ubicación: ${student.ubicacion}
+
+Interés dominante: ${topInterest ? CATEGORIES[topInterest].name : "N/A"} (${topInterest || ""})
+Aptitud dominante: ${topAptitude ? CATEGORIES[topAptitude].name : "N/A"} (${topAptitude || ""})
+    `.trim();
+
+    // Enviar al alumno por EmailJS
+    try {
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        { name: student.nombre, email: student.email, result: resumen },
+        USER_ID
+      );
+      setSent(true);
+    } catch (_) {}
+
+    // Enviar al admin por Formspree
+    try {
+      await submitFormspree(import.meta.env.VITE_FORMSPREE_ENDPOINT, {
+        form: "test-chaside",
+        nombre: student.nombre,
+        email: student.email,
+        edad: student.edad,
+        genero: student.genero,
+        ubicacion: student.ubicacion,
+        interes_dominante: topInterest ? `${CATEGORIES[topInterest].name} (${topInterest})` : "N/A",
+        aptitud_dominante: topAptitude ? `${CATEGORIES[topAptitude].name} (${topAptitude})` : "N/A",
+      });
+    } catch (_) {}
+
+    setSending(false);
   };
 
-  if (showIntro) {
+  const handleRestart = () => {
+    setAnswers({});
+    setCurrentIndex(0);
+    setStudent(initialStudent);
+    setSent(false);
+    setStep("intro");
+  };
+
+  // --- INTRO ---
+  if (step === "intro") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
-        <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-md text-center">
+        <div className="w-full max-w-xl bg-white p-8 rounded-2xl shadow-md text-center">
           <h1 className="text-3xl font-bold mb-4 text-gray-800">Test CHASIDE de Orientación Vocacional</h1>
-          <p className="mb-4 text-lg">
-            Este test te ayudará a identificar tus intereses y aptitudes profesionales según el modelo CHASIDE. 
-            Responde sinceramente a cada pregunta para obtener un resultado personalizado.
+          <p className="mb-4 text-lg text-gray-600">
+            Este test te ayudará a identificar tus intereses y aptitudes profesionales y a descubrir las carreras que mejor encajan contigo.
           </p>
-          <p className="mb-2 text-md">
-            <strong>Número de preguntas:</strong> 98
-          </p>
-          <p className="mb-6 text-md">
-            <strong>Tiempo estimado:</strong> 10-15 minutos
-          </p>
+          <div className="flex justify-center gap-8 mb-6 text-sm text-gray-500">
+            <span>📋 <strong>98 preguntas</strong></span>
+            <span>⏱ <strong>10-15 minutos</strong></span>
+          </div>
           <button
-            onClick={() => setShowIntro(false)}
-            className="px-6 py-3 bg-[var(--color-logo-cuatro)] hover:bg-[var(--color-logo-tres)] text-white rounded-lg font-semibold transition"
+            onClick={() => setStep("registro")}
+            className="px-8 py-3 bg-logo-dos hover:bg-logo-cuatro text-white rounded-full font-semibold transition"
           >
-            Comenzar test
+            Comenzar
           </button>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800">Test de Orientación Laboral</h1>
-      {!showResult ? (
-        <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-md">
-          {/* Barra de progreso */}
-          <div className="w-full bg-gray-200 rounded-full h-3 mb-6">
-            <div
-              className="bg-[var(--color-logo-cuatro)] h-3 rounded-full transition-all"
-              style={{ width: `${progress}%` }}
-            ></div>
+  // --- REGISTRO ---
+  if (step === "registro") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
+        <div className="w-full max-w-xl bg-white p-8 rounded-2xl shadow-md">
+          <h2 className="text-2xl font-bold mb-2 text-gray-800">Antes de empezar</h2>
+          <p className="text-gray-500 mb-6">Necesitamos algunos datos para enviarte tus resultados.</p>
+          <form onSubmit={handleRegistroSubmit} className="flex flex-col gap-4" noValidate>
+            <div>
+              <label className="font-semibold block mb-1">Nombre completo *</label>
+              <input
+                type="text"
+                name="nombre"
+                value={student.nombre}
+                onChange={handleStudentChange}
+                placeholder="Tu nombre"
+                className={`w-full p-2 rounded border ${studentErrors.nombre ? "border-red-400" : "border-gray-300"}`}
+              />
+              {studentErrors.nombre && <span className="text-red-500 text-sm">{studentErrors.nombre}</span>}
+            </div>
+
+            <div>
+              <label className="font-semibold block mb-1">Correo electrónico *</label>
+              <input
+                type="email"
+                name="email"
+                value={student.email}
+                onChange={handleStudentChange}
+                placeholder="tucorreo@email.com"
+                className={`w-full p-2 rounded border ${studentErrors.email ? "border-red-400" : "border-gray-300"}`}
+              />
+              {studentErrors.email && <span className="text-red-500 text-sm">{studentErrors.email}</span>}
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="font-semibold block mb-1">Edad *</label>
+                <input
+                  type="number"
+                  name="edad"
+                  value={student.edad}
+                  onChange={handleStudentChange}
+                  placeholder="Ej: 17"
+                  min={12}
+                  max={99}
+                  className={`w-full p-2 rounded border ${studentErrors.edad ? "border-red-400" : "border-gray-300"}`}
+                />
+                {studentErrors.edad && <span className="text-red-500 text-sm">{studentErrors.edad}</span>}
+              </div>
+
+              <div className="flex-1">
+                <label className="font-semibold block mb-1">Género *</label>
+                <select
+                  name="genero"
+                  value={student.genero}
+                  onChange={handleStudentChange}
+                  className={`w-full p-2 rounded border bg-white ${studentErrors.genero ? "border-red-400" : "border-gray-300"}`}
+                >
+                  <option value="">Selecciona</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="No binario">No binario</option>
+                  <option value="Prefiero no decir">Prefiero no decir</option>
+                </select>
+                {studentErrors.genero && <span className="text-red-500 text-sm">{studentErrors.genero}</span>}
+              </div>
+            </div>
+
+            <div>
+              <label className="font-semibold block mb-1">Ciudad / Provincia *</label>
+              <input
+                type="text"
+                name="ubicacion"
+                value={student.ubicacion}
+                onChange={handleStudentChange}
+                placeholder="Ej: Madrid, Barcelona..."
+                className={`w-full p-2 rounded border ${studentErrors.ubicacion ? "border-red-400" : "border-gray-300"}`}
+              />
+              {studentErrors.ubicacion && <span className="text-red-500 text-sm">{studentErrors.ubicacion}</span>}
+            </div>
+
+            <button
+              type="submit"
+              className="mt-2 bg-logo-dos text-white font-bold py-3 rounded-full hover:bg-logo-cuatro transition"
+            >
+              Empezar el test →
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // --- TEST ---
+  if (step === "test") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gray-50">
+        <div className="w-full max-w-xl bg-white p-8 rounded-2xl shadow-md">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm text-gray-500">Pregunta {currentIndex + 1} de {TOTAL_QUESTIONS}</span>
+            <span className="text-sm text-gray-500">{progress}%</span>
           </div>
-          <p className="mb-6 text-lg font-semibold">{currentQid}. {currentQuestion}</p>
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
+            <div
+              className="bg-logo-dos h-2 rounded-full transition-all"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="mb-6 text-lg font-semibold text-gray-800">{currentQid}. {QUESTIONS[currentQid]}</p>
           <div className="flex flex-col gap-4">
             {["yes", "no"].map((val) => (
               <label
                 key={val}
-                className={`cursor-pointer rounded-md border p-4 flex items-center
-                  ${answers[currentQid] === val ? "bg-[#ffb7a1] border-[#ed7a6b] text-white" : "bg-white border-gray-300 hover:bg-gray-100"}
-                `}
+                className={`cursor-pointer rounded-xl border p-4 flex items-center transition
+                  ${answers[currentQid] === val
+                    ? "bg-logo-dos border-logo-dos text-white"
+                    : "bg-white border-gray-300 hover:bg-gray-50"
+                  }`}
               >
                 <input
                   type="radio"
@@ -197,73 +330,102 @@ Rasgos: ${results.topAptitude ? CATEGORIES[results.topAptitude].aptitudes.join("
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`px-4 py-2 rounded-md font-semibold transition
-                ${currentIndex === 0 ? "bg-gray-300 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300"}
-              `}
+              className={`px-4 py-2 rounded-full font-semibold transition
+                ${currentIndex === 0 ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-gray-200 hover:bg-gray-300"}`}
             >
-              Anterior
+              ← Anterior
             </button>
             <button
               onClick={handleNext}
               disabled={!answers[currentQid]}
-              className={`px-4 py-2 rounded-md font-semibold transition 
-                ${answers[currentQid] ? "bg-[#ed7a6b] hover:bg-[#ffb7a1] text-white" : "bg-gray-300 cursor-not-allowed"}
-              `}
+              className={`px-6 py-2 rounded-full font-semibold transition
+                ${answers[currentQid]
+                  ? "bg-logo-dos hover:bg-logo-cuatro text-white"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
             >
-              {currentIndex === TOTAL_QUESTIONS - 1 ? "Finalizar" : "Siguiente"}
+              {currentIndex === TOTAL_QUESTIONS - 1 ? "Finalizar ✓" : "Siguiente →"}
             </button>
           </div>
         </div>
-      ) : (
-        <div className="w-full max-w-xl bg-white p-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">¡Test completado!</h2>
-          <div className="mb-6">
-            <h3 className="text-lg font-bold mb-2">Interés dominante:</h3>
-            {results.topInterest ? (
-              <>
-                <p className="font-semibold text-[var(--color-logo-cuatro)]">{CATEGORIES[results.topInterest].name} ({results.topInterest})</p>
-                <p className="text-sm">Puntaje: {results.topInterestScore}</p>
-                <p className="text-sm mb-2">Rasgos: {CATEGORIES[results.topInterest].interests.join(", ")}</p>
-              </>
-            ) : <p>No hay interés dominante.</p>}
-            <h3 className="text-lg font-bold mb-2 mt-4">Aptitud dominante:</h3>
-            {results.topAptitude ? (
-              <>
-                <p className="font-semibold text-[var(--color-logo-cuatro)]">{CATEGORIES[results.topAptitude].name} ({results.topAptitude})</p>
-                <p className="text-sm">Puntaje: {results.topAptitudeScore}</p>
-                <p className="text-sm mb-2">Rasgos: {CATEGORIES[results.topAptitude].aptitudes.join(", ")}</p>
-              </>
-            ) : <p>No hay aptitud dominante.</p>}
+      </div>
+    );
+  }
+
+  // --- RESULTADO ---
+  const topCareers = results.topInterest ? getTopCareers(results.topInterest) : [];
+
+  return (
+    <div className="min-h-screen flex flex-col items-center p-6 bg-gray-50 py-12">
+      <div className="w-full max-w-3xl">
+        {/* Cabecera resultado */}
+        <div className="bg-white rounded-2xl shadow-md p-8 mb-6 text-center">
+          <h2 className="text-3xl font-bold mb-2 text-gray-800">¡Test completado, {student.nombre}!</h2>
+          {sent ? (
+            <p className="text-green-600 text-sm mb-4">✓ Hemos enviado tu resultado a {student.email}</p>
+          ) : sending ? (
+            <p className="text-gray-400 text-sm mb-4">Enviando resultados...</p>
+          ) : null}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            {results.topInterest && (
+              <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-left">
+                <p className="text-xs text-orange-400 font-semibold uppercase mb-1">Interés dominante</p>
+                <p className="font-bold text-lg text-gray-800">{CATEGORIES[results.topInterest].name}</p>
+                <p className="text-sm text-gray-500 mt-1">{CATEGORIES[results.topInterest].interests.slice(0, 3).join(", ")}</p>
+              </div>
+            )}
+            {results.topAptitude && (
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-left">
+                <p className="text-xs text-blue-400 font-semibold uppercase mb-1">Aptitud dominante</p>
+                <p className="font-bold text-lg text-gray-800">{CATEGORIES[results.topAptitude].name}</p>
+                <p className="text-sm text-gray-500 mt-1">{CATEGORIES[results.topAptitude].aptitudes.slice(0, 3).join(", ")}</p>
+              </div>
+            )}
           </div>
-          {!sent ? (
-            <div className="mt-6 flex flex-col items-center">
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="Tu correo electrónico"
-                className="border p-2 rounded mb-2 w-full max-w-xs"
-                required
-              />
-              <button
-                onClick={sendResultByEmail}
-                disabled={sending || !email}
-                className="bg-[var(--color-logo-cuatro)] text-white px-4 py-2 rounded"
-              >
-                {sending ? 'Enviando...' : 'Enviar resultado por email'}
-              </button>
+        </div>
+
+        {/* Carreras recomendadas */}
+        {topCareers.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Carreras recomendadas para ti</h3>
+            <div className="flex flex-col gap-4">
+              {topCareers.map((career, idx) => (
+                <div key={idx} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-bold text-gray-800 text-lg">{career.title}</h4>
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ml-2 whitespace-nowrap
+                      ${career.jobDemand === "Alta" ? "bg-green-100 text-green-700" :
+                        career.jobDemand === "Media" ? "bg-yellow-100 text-yellow-700" :
+                        "bg-red-100 text-red-700"}`}>
+                      Demanda {career.jobDemand}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-3">{career.description}</p>
+                  <div className="grid grid-cols-2 gap-2 text-sm text-gray-500">
+                    <span>💰 {career.avgSalary}</span>
+                    <span>🏢 {career.workEnvironment}</span>
+                    <span className="col-span-2">🎓 {career.educationPath}</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {career.topSkills.map((skill, i) => (
+                      <span key={i} className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">{skill}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          ) : (
-            <p className="text-green-600 mt-4">¡Resultado enviado a tu correo!</p>
-          )}
+          </div>
+        )}
+
+        <div className="text-center">
           <button
             onClick={handleRestart}
-            className="mt-6 px-6 py-3 bg-[#ffb7a1] hover:bg-[#ed7a6b] rounded-lg font-semibold text-white transition"
+            className="px-8 py-3 bg-logo-dos hover:bg-logo-cuatro text-white rounded-full font-semibold transition"
           >
-            Reiniciar Test
+            Repetir test
           </button>
         </div>
-      )}
+      </div>
     </div>
   );
-} 
+}
