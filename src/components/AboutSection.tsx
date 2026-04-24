@@ -9,25 +9,25 @@ import Diana from "../assets/image/Diana.svg";
 const cards = [
   {
     title: "NUESTRA MISIÓN",
-    text: "Orientación personalizada y recursos para ayudarle a tomar decisiones profesionales con confianza y claridad",
+    text: "Acompañar a Startups y personas a tomar decisiones sobre carrera, equipo y estructura con más claridad y contexto",
     img: VisionBoard,
     border: "border-red-200",
   },
   {
     title: "A QUIÉN SERVIMOS",
-    text: "Te ofrecemos ideas y herramientas para explorar opciones profesionales, comprender el panorama del sector y tomar decisiones informadas sobre tu futuro.",
+    text: "Empresas en crecimiento sin departamento de RRHH\nEquipos que están empezando a estructurarse\nFounders que necesitan apoyo en decisiones de personas",
     img: webinar,
     border: "border-gray-200",
   },
   {
     title: "RECURSOS COMPLETOS",
-    text: "Gran cantidad de recursos que abarcan temas como la elaboración de currículos, la preparación de entrevistas, estrategias para establecer contactos y mucho más.",
+    text: "Nuestras areas de trabajo son bastante amplias incluyendo: Cultura, recruitment, diseño de perfiles, onboarding & off-boarding, políticas de empresa, performance & desarrollo, entre otras",
     img: cohorte,
     border: "border-yellow-200",
   },
   {
     title: "NUESTRO ENFOQUE",
-    text: "La trayectoria profesional de cada persona es única. Nuestras sesiones de asesoramiento personalizadas están diseñadas para comprender sus aspiraciones, puntos fuertes y valores, ajustándonos a sus objetivos personales.",
+    text: "Trabajamos desde el contexto de cada empresa para definir decisiones sostenibles en el tiempo.",
     img: analyze,
     border: "border-red-200",
   },
@@ -56,7 +56,7 @@ const AboutSection: React.FC = () => (
           <img src={card.img} alt={card.title} className="w-32 h-32 object-contain" />
           <div className="flex-1 flex flex-col justify-center items-start text-left">
             <h3 className="font-bold text-2xl mb-2 text-black">{card.title}</h3>
-            <p className="text-m text-gray-700">{card.text}</p>
+            <p className="text-m text-gray-700 whitespace-pre-line">{card.text}</p>
           </div>
         </div>
       ))}

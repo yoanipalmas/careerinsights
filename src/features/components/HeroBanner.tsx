@@ -21,18 +21,15 @@ const HeroBanner: React.FC = () => {
           </div>
           <div className="flex-1 flex flex-col justify-center items-start pl-0 md:pl-4">
             <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8 leading-tight text-black">
-              SIMPLIFICAMOS
-              EL PROCESO<br />
-              CENTRÁNDONOS
-              EN LO QUE<br />
-              REALMENTE
-              IMPORTA.
+              TOMA MEJORES<br />
+              DECISIONES DE<br />
+              TALENTO
             </h1>
             <button
               className="mt-2 flex items-center gap-2 bg-logo-dos text-black font-semibold px-6 md:px-8 py-3 rounded-full shadow hover:bg-yellow-200 transition text-lg md:text-xl"
               onClick={handleScrollServicios}
             >
-              Descubre cómo
+              Ver servicios
             </button>
           </div>
         </div>

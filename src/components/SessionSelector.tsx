@@ -9,31 +9,21 @@ import StartupLifeImg from "../assets/image/Startup life-cuate.svg";
 
 const sessionsCareer = [
   {
-    title: <>JUNIOR</>,
-    img: SesionImg,
-    alt: "Junior",
-    onClick: "/junior",
-  },
-  {
-    title: <>SENIOR</>,
-    img: OrientacionImg,
-    alt: "Senior",
-    onClick: "/senior",
-  },
-  {
-    title: <>EMPRESA</>,
-    img: TalleresImg,
-    alt: "Empresa",
+    title: <>STARTUPS</>,
+    img: StartupLifeImg,
+    alt: "Startups",
     onClick: "/empresa",
   },
   {
-    title: (
-      <>
-        IT BASICS <br /> FOR EARLY TEAMS
-      </>
-    ),
-    img: StartupLifeImg,
-    alt: "IT Basics for Early Teams",
+    title: <>AGENDA UNA CITA</>,
+    img: SesionImg,
+    alt: "Agenda una cita",
+    onClick: "/sesion-1a1",
+  },
+  {
+    title: <>SOPORTE TECNICO</>,
+    img: TalleresImg,
+    alt: "Soporte técnico",
     onClick: "/it-basics",
   },
 ];

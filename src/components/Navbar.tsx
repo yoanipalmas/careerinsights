@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 const Navbar: React.FC = () => {
   const { isLoggedIn } = useAuth();
   const filteredItems = navItems.filter(item => !item.requiresAuth || isLoggedIn);
-  const leftItems = filteredItems.slice(0, 2);
-  const rightItems = filteredItems.slice(2);
+  const leftItems = filteredItems.slice(0, 3);
+  const rightItems = filteredItems.slice(3);
 
   return (
     <nav className="grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 py-4 border-b-2 border-border-navbar w-full">
