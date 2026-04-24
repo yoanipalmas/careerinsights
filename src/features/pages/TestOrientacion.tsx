@@ -129,6 +129,23 @@ export default function TestOrientacion() {
 
   const results = getResults();
 
+  const SOFT_SKILLS: Record<CategoryKey, string[]> = {
+    C: ["Organización", "Liderazgo", "Negociación", "Toma de decisiones", "Orientación a resultados"],
+    H: ["Empatía", "Escucha activa", "Comunicación", "Trabajo en equipo", "Resolución de conflictos"],
+    A: ["Creatividad", "Pensamiento original", "Observación", "Sensibilidad estética", "Apertura al cambio"],
+    S: ["Vocación de servicio", "Paciencia", "Trabajo bajo presión", "Atención al detalle", "Empatía"],
+    I: ["Pensamiento analítico", "Resolución de problemas", "Precisión", "Pensamiento lógico", "Perseverancia"],
+    D: ["Disciplina", "Responsabilidad", "Trabajo en equipo", "Liderazgo", "Gestión del estrés"],
+    E: ["Curiosidad intelectual", "Pensamiento crítico", "Rigor", "Investigación", "Atención al detalle"],
+  };
+
+  const topSoftSkills: string[] = (() => {
+    const skills = new Set<string>();
+    if (results.topInterest) SOFT_SKILLS[results.topInterest].forEach(s => skills.add(s));
+    if (results.topAptitude) SOFT_SKILLS[results.topAptitude].forEach(s => skills.add(s));
+    return Array.from(skills).slice(0, 6);
+  })();
+
   const sendResults = async () => {
     setSending(true);
     const { topInterest, topAptitude } = getResults();
@@ -391,6 +408,21 @@ Aptitud dominante: ${topAptitude ? CATEGORIES[topAptitude].name : "N/A"} (${topA
             )}
           </div>
         </div>
+
+        {/* Soft skills */}
+        {topSoftSkills.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-md p-6 mb-6">
+            <h3 className="text-lg font-bold text-gray-800 mb-1">Tus soft skills destacadas</h3>
+            <p className="text-sm text-gray-400 mb-4">Basadas en tu perfil de intereses y aptitudes</p>
+            <div className="flex flex-wrap gap-3">
+              {topSoftSkills.map((skill, i) => (
+                <span key={i} className="bg-orange-50 border border-orange-200 text-orange-700 text-sm font-medium px-4 py-2 rounded-full">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Carreras recomendadas */}
         {topCareers.length > 0 && (
