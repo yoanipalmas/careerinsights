@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import SessionSelector from "../components/SessionSelector";
 import { submitFormspree } from "../utils/formspree";
 
 const initialForm = {
@@ -123,23 +122,13 @@ const Empresa: React.FC = () => {
             El primer paso es una conversación inicial para entender el momento de la startup y ver si este tipo de acompañamiento encaja con sus necesidades actuales. A partir de ahí se define un formato de trabajo adaptado: proyecto puntual o acompañamiento durante una fase concreta de crecimiento.
           </p>
 
-          <div className="w-full">
-            <SessionSelector
-              showHeading={false}
-              variant="original"
-              originalTitleOverrides={{
-                session1: <>AGENDAR</>,
-                talleres: (
-                  <>
-                    PEOPLE STRATEGY <br /> FOR SCALE UPS
-                  </>
-                ),
-              }}
-              originalOnClickOverrides={{
-                session1: scrollToForm,
-              }}
-            />
-          </div>
+          <button
+            type="button"
+            onClick={scrollToForm}
+            className="mt-4 bg-logo-dos text-white font-bold px-8 py-3 rounded-full shadow hover:bg-logo-cuatro transition-colors"
+          >
+            Agendar sesión
+          </button>
         </div>
 
         {/* Formulario de contacto para startups */}
