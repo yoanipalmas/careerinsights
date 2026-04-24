@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { submitFormspree } from "../utils/formspree";
 
 const initialForm = {
@@ -12,7 +12,7 @@ const initialForm = {
 const validateEmail = (email: string) => /^\S+@\S+\.\S+$/.test(email);
 
 const Empresa: React.FC = () => {
-  const formRef = useRef<HTMLDivElement>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitted, setSubmitted] = useState(false);
@@ -24,10 +24,17 @@ const Empresa: React.FC = () => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
-  const scrollToForm = () => {
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+  const openModal = () => {
+    setForm(initialForm);
+    setErrors({});
+    setSubmitted(false);
+    setSubmitError("");
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSubmitted(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -46,7 +53,6 @@ const Empresa: React.FC = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       setIsSubmitting(true);
-      setSubmitted(false);
       setSubmitError("");
       try {
         await submitFormspree(formspreeEndpoint, {
@@ -58,7 +64,6 @@ const Empresa: React.FC = () => {
           mensaje: form.mensaje,
         });
         setSubmitted(true);
-        setForm(initialForm);
       } catch (error) {
         setSubmitError(error instanceof Error ? error.message : "Error al enviar");
       } finally {
@@ -124,93 +129,114 @@ const Empresa: React.FC = () => {
 
           <button
             type="button"
-            onClick={scrollToForm}
+            onClick={openModal}
             className="mt-4 bg-logo-dos text-white font-bold px-8 py-3 rounded-full shadow hover:bg-logo-cuatro transition-colors"
           >
             Agendar sesión
           </button>
         </div>
-
-        {/* Formulario de contacto para startups */}
-        <div ref={formRef} id="formulario-startup" className="w-full bg-white border border-logo-dos rounded-2xl shadow-md p-8 mb-8">
-          <h2 className="text-2xl font-bold text-logo-dos mb-2 text-center">Agenda una sesión</h2>
-          <p className="text-gray-600 text-center mb-6">Cuéntanos sobre tu startup y nos ponemos en contacto contigo.</p>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
-
-            <label className="font-semibold">Nombre de la empresa *</label>
-            <input
-              type="text"
-              name="empresa"
-              value={form.empresa}
-              onChange={handleChange}
-              className={`p-2 rounded border ${errors.empresa ? "border-red-400" : "border-gray-300"}`}
-              placeholder="Tu empresa"
-            />
-            {errors.empresa && <span className="text-red-500 text-sm">{errors.empresa}</span>}
-
-            <label className="font-semibold">Nombre de contacto *</label>
-            <input
-              type="text"
-              name="contacto"
-              value={form.contacto}
-              onChange={handleChange}
-              className={`p-2 rounded border ${errors.contacto ? "border-red-400" : "border-gray-300"}`}
-              placeholder="Tu nombre"
-            />
-            {errors.contacto && <span className="text-red-500 text-sm">{errors.contacto}</span>}
-
-            <label className="font-semibold">Correo electrónico *</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className={`p-2 rounded border ${errors.email ? "border-red-400" : "border-gray-300"}`}
-              placeholder="tucorreo@empresa.com"
-            />
-            {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
-
-            <label className="font-semibold">Tamaño del equipo</label>
-            <select
-              name="empleados"
-              value={form.empleados}
-              onChange={handleChange}
-              className="p-2 rounded border border-gray-300 bg-white"
-            >
-              <option value="">Selecciona una opción</option>
-              <option value="1-5">1-5 personas</option>
-              <option value="6-15">6-15 personas</option>
-              <option value="16-50">16-50 personas</option>
-              <option value="50+">Más de 50 personas</option>
-            </select>
-
-            <label className="font-semibold">¿En qué podemos ayudarte? *</label>
-            <textarea
-              name="mensaje"
-              value={form.mensaje}
-              onChange={handleChange}
-              className={`p-2 rounded border ${errors.mensaje ? "border-red-400" : "border-gray-300"}`}
-              placeholder="Cuéntanos brevemente el momento de tu startup y qué necesitas"
-              rows={4}
-            />
-            {errors.mensaje && <span className="text-red-500 text-sm">{errors.mensaje}</span>}
-
-            <button
-              type="submit"
-              className="mt-2 bg-logo-dos text-white font-bold py-2 rounded hover:bg-logo-cuatro transition-colors disabled:opacity-60"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Enviando..." : "Enviar solicitud"}
-            </button>
-            {submitted && (
-              <span className="text-green-600 text-sm mt-2 text-center">¡Solicitud enviada! Nos pondremos en contacto pronto.</span>
-            )}
-            {submitError && (
-              <span className="text-red-500 text-sm mt-2">{submitError}</span>
-            )}
-          </form>
-        </div>
       </div>
+
+      {/* Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-8 relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            >
+              ×
+            </button>
+
+            {submitted ? (
+              <div className="flex flex-col items-center justify-center py-8 gap-4 text-center">
+                <div className="text-5xl">✓</div>
+                <h2 className="text-2xl font-bold text-logo-dos">¡Solicitud recibida!</h2>
+                <p className="text-gray-600">Hemos recibido tu solicitud. Nos pondremos en contacto contigo en breve.</p>
+                <button
+                  onClick={closeModal}
+                  className="mt-4 bg-logo-dos text-white font-bold px-8 py-3 rounded-full hover:bg-logo-cuatro transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-logo-dos mb-2 text-center">Agenda una sesión</h2>
+                <p className="text-gray-600 text-center mb-6">Cuéntanos sobre tu startup y nos ponemos en contacto contigo.</p>
+                <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+                  <label className="font-semibold">Nombre de la empresa *</label>
+                  <input
+                    type="text"
+                    name="empresa"
+                    value={form.empresa}
+                    onChange={handleChange}
+                    className={`p-2 rounded border ${errors.empresa ? "border-red-400" : "border-gray-300"}`}
+                    placeholder="Tu empresa"
+                  />
+                  {errors.empresa && <span className="text-red-500 text-sm">{errors.empresa}</span>}
+
+                  <label className="font-semibold">Nombre de contacto *</label>
+                  <input
+                    type="text"
+                    name="contacto"
+                    value={form.contacto}
+                    onChange={handleChange}
+                    className={`p-2 rounded border ${errors.contacto ? "border-red-400" : "border-gray-300"}`}
+                    placeholder="Tu nombre"
+                  />
+                  {errors.contacto && <span className="text-red-500 text-sm">{errors.contacto}</span>}
+
+                  <label className="font-semibold">Correo electrónico *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    className={`p-2 rounded border ${errors.email ? "border-red-400" : "border-gray-300"}`}
+                    placeholder="tucorreo@empresa.com"
+                  />
+                  {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+
+                  <label className="font-semibold">Tamaño del equipo</label>
+                  <select
+                    name="empleados"
+                    value={form.empleados}
+                    onChange={handleChange}
+                    className="p-2 rounded border border-gray-300 bg-white"
+                  >
+                    <option value="">Selecciona una opción</option>
+                    <option value="1-5">1-5 personas</option>
+                    <option value="6-15">6-15 personas</option>
+                    <option value="16-50">16-50 personas</option>
+                    <option value="50+">Más de 50 personas</option>
+                  </select>
+
+                  <label className="font-semibold">¿En qué podemos ayudarte? *</label>
+                  <textarea
+                    name="mensaje"
+                    value={form.mensaje}
+                    onChange={handleChange}
+                    className={`p-2 rounded border ${errors.mensaje ? "border-red-400" : "border-gray-300"}`}
+                    placeholder="Cuéntanos brevemente el momento de tu startup y qué necesitas"
+                    rows={4}
+                  />
+                  {errors.mensaje && <span className="text-red-500 text-sm">{errors.mensaje}</span>}
+
+                  <button
+                    type="submit"
+                    className="mt-2 bg-logo-dos text-white font-bold py-2 rounded-full hover:bg-logo-cuatro transition-colors disabled:opacity-60"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Enviando..." : "Enviar solicitud"}
+                  </button>
+                  {submitError && <span className="text-red-500 text-sm mt-2">{submitError}</span>}
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 };
