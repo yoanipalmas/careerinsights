@@ -1,0 +1,12 @@
+[
+  {
+    "title": "EL SÍNDROME DE LA SALVADORA",
+    "excerpt": "¿Eres de las que siempre se hace cargo de todo? ¿Solucionas lo tuyo y lo de los demás? ¿Te postulas voluntaria en el trabajo, sostienes emocionalmente a tu familia, estás para tus amigas, tus hijos y pareja? Puede que no sea solo eso...",
+    "image": "",
+    "url": "https://example.com/blog/el-sindrome-de-la-salvadora",
+    "slug": "el-sindrome-de-la-salvadora",
+    "content": "# EL SÍNDROME DE LA SALVADORA\n\nEste es un ejemplo de contenido en **Markdown**.\n\n- Punto uno\n- Punto dos\n\n[Leer más](https://example.com)",
+    "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "published": "yes"
+  }
+]

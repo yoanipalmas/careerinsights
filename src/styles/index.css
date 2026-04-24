@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@import './fonts.css';
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.font-chloe {
+  font-family: 'Chloe', sans-serif;
+}
+
+@theme {
+  --color-career: #FFB7A1;
+  --color-logo-uno: #ED7A6B;
+  --color-logo-dos: #EFBC68;
+  --color-logo-tres: #919F89;
+  --color-logo-cuatro: #85A9D2;
+  --color-border-navbar: #FC8282
+}
+
+/* Para títulos (Quicksand) y subtítulos/contenido (Ubuntu) */
+.font-quicksand {
+  font-family: 'Quicksand', sans-serif;
+}
+.font-ubuntu-regular {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 400;
+}
+.font-ubuntu-light {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 300;
+}
