@@ -165,7 +165,7 @@ Aptitud dominante: ${topAptitude ? CATEGORIES[topAptitude].name : "N/A"} (${topA
       await emailjs.send(
         SERVICE_ID,
         TEMPLATE_ID,
-        { name: student.nombre, email: student.email, result: resumen },
+        { to_name: student.nombre, to_email: student.email, result: resumen },
         USER_ID
       );
       setSent(true);
