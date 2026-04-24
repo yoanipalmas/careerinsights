@@ -1,23 +1,32 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { submitFormspree } from "../utils/formspree";
 import FaceToFace from "../assets/image/Face to face-amico.svg";
 
-const initialForm = {
-  name: "",
-  email: "",
-  message: "",
-};
-
+const initialForm = { name: "", email: "", message: "" };
 const validateEmail = (email: string) => /^\S+@\S+\.\S+$/.test(email);
 
 const Sesion1a1: React.FC = () => {
+  const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT as string | undefined;
-  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
+  const openModal = () => {
+    setForm(initialForm);
+    setErrors({});
+    setSubmitted(false);
+    setSubmitError("");
+    setModalOpen(true);
+  };
+
+  const closeModal = () => setModalOpen(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,7 +43,6 @@ const Sesion1a1: React.FC = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
       setIsSubmitting(true);
-      setSubmitted(false);
       setSubmitError("");
       try {
         await submitFormspree(formspreeEndpoint, {
@@ -44,7 +52,6 @@ const Sesion1a1: React.FC = () => {
           mensaje: form.message,
         });
         setSubmitted(true);
-        setForm(initialForm);
       } catch (error) {
         setSubmitError(error instanceof Error ? error.message : "Error al enviar");
       } finally {
@@ -53,15 +60,8 @@ const Sesion1a1: React.FC = () => {
     }
   };
 
-  const scrollToForm = () => {
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <section className="flex flex-col items-center justify-center px-4 py-8 bg-gray-50 min-h-screen">
-      {/* Header y sección principal */}
       <div className="w-full max-w-5xl mx-auto mb-8">
         <div className="bg-white rounded-[40px] border border-logo-dos shadow-lg flex flex-col md:flex-row items-center w-full p-8 md:p-12 mb-10">
           <div className="flex-1 flex flex-col justify-center items-start">
@@ -72,8 +72,8 @@ const Sesion1a1: React.FC = () => {
             </p>
             <button
               type="button"
-              onClick={scrollToForm}
-              className="bg-[#ffb7a1] hover:bg-[#ed7a6b] text-white font-semibold px-8 py-3 rounded-lg shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500 inline-block text-center"
+              onClick={openModal}
+              className="bg-[#ffb7a1] hover:bg-[#ed7a6b] text-white font-semibold px-8 py-3 rounded-full shadow-md transition duration-300"
             >
               Solicita tu sesión
             </button>
@@ -84,15 +84,12 @@ const Sesion1a1: React.FC = () => {
         </div>
       </div>
 
-      {/* Secciones informativas */}
       <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        {/* ¿A quién va dirigido? */}
         <div className="bg-white border border-logo-dos rounded-2xl shadow-md p-6 flex flex-col gap-4">
           <h2 className="text-2xl font-bold text-logo-dos mb-2">¿A quién va dirigido?</h2>
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3">
               <span className="mt-1">
-                {/* Check icon */}
                 <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="text-logo-dos"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
               </span>
               <span className="text-gray-800 text-lg font-medium">Jóvenes que quieren descubrir su vocación</span>
@@ -105,7 +102,6 @@ const Sesion1a1: React.FC = () => {
             </div>
           </div>
         </div>
-        {/* ¿Qué obtienes? */}
         <div className="bg-white border border-logo-dos rounded-2xl shadow-md p-6 flex flex-col gap-4">
           <h2 className="text-2xl font-bold text-logo-dos mb-2">¿Qué obtienes?</h2>
           <div className="flex flex-col gap-4">
@@ -131,60 +127,83 @@ const Sesion1a1: React.FC = () => {
         </div>
       </div>
 
-      {/* Formulario de contacto */}
-      <div ref={formRef} id="formulario" className="w-full max-w-3xl bg-white border border-logo-dos rounded-2xl shadow-md p-8 mb-8">
-        <h2 className="text-2xl font-bold text-logo-dos mb-4 text-center">Solicita tu sesión 1 a 1</h2>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
-          <label className="font-semibold">Nombre completo *</label>
-          <input
-            type="text"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            className={`p-2 rounded border ${errors.name ? "border-red-400" : "border-gray-300"}`}
-            placeholder="Tu nombre"
-          />
-          {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
+      {/* Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-8 relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            >
+              ×
+            </button>
 
-          <label className="font-semibold">Correo electrónico *</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            className={`p-2 rounded border ${errors.email ? "border-red-400" : "border-gray-300"}`}
-            placeholder="tucorreo@email.com"
-          />
-          {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+            {submitted ? (
+              <div className="flex flex-col items-center justify-center py-8 gap-4 text-center">
+                <div className="text-5xl">✓</div>
+                <h2 className="text-2xl font-bold text-logo-dos">¡Solicitud recibida!</h2>
+                <p className="text-gray-600">Hemos recibido tu solicitud. Nos pondremos en contacto contigo en breve.</p>
+                <button
+                  onClick={closeModal}
+                  className="mt-4 bg-logo-dos text-white font-bold px-8 py-3 rounded-full hover:bg-logo-cuatro transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-logo-dos mb-2 text-center">Solicita tu sesión 1 a 1</h2>
+                <p className="text-gray-600 text-center mb-6">Cuéntanos en qué podemos ayudarte y nos ponemos en contacto contigo.</p>
+                <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+                  <label className="font-semibold">Nombre completo *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className={`p-2 rounded border ${errors.name ? "border-red-400" : "border-gray-300"}`}
+                    placeholder="Tu nombre"
+                  />
+                  {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
 
-          <label className="font-semibold">Mensaje *</label>
-          <textarea
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            className={`p-2 rounded border ${errors.message ? "border-red-400" : "border-gray-300"}`}
-            placeholder="Cuéntanos brevemente en qué te gustaría que te ayudemos"
-            rows={4}
-          />
-          {errors.message && <span className="text-red-500 text-sm">{errors.message}</span>}
+                  <label className="font-semibold">Correo electrónico *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    className={`p-2 rounded border ${errors.email ? "border-red-400" : "border-gray-300"}`}
+                    placeholder="tucorreo@email.com"
+                  />
+                  {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
 
-          <button
-            type="submit"
-            className="mt-2 bg-logo-dos text-white font-bold py-2 rounded hover:bg-logo-cuatro transition-colors disabled:opacity-60"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Enviando..." : "Enviar solicitud"}
-          </button>
-          {submitted && (
-            <span className="text-green-600 text-sm mt-2">¡Solicitud enviada correctamente!</span>
-          )}
-          {submitError && (
-            <span className="text-red-500 text-sm mt-2">{submitError}</span>
-          )}
-        </form>
-      </div>
+                  <label className="font-semibold">Mensaje *</label>
+                  <textarea
+                    name="message"
+                    value={form.message}
+                    onChange={handleChange}
+                    className={`p-2 rounded border ${errors.message ? "border-red-400" : "border-gray-300"}`}
+                    placeholder="Cuéntanos brevemente en qué te gustaría que te ayudemos"
+                    rows={4}
+                  />
+                  {errors.message && <span className="text-red-500 text-sm">{errors.message}</span>}
+
+                  <button
+                    type="submit"
+                    className="mt-2 bg-logo-dos text-white font-bold py-2 rounded-full hover:bg-logo-cuatro transition-colors disabled:opacity-60"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Enviando..." : "Enviar solicitud"}
+                  </button>
+                  {submitError && <span className="text-red-500 text-sm mt-2">{submitError}</span>}
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 };
 
-export default Sesion1a1; 
+export default Sesion1a1;
