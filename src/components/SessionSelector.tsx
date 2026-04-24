@@ -73,6 +73,11 @@ type SessionSelectorProps = {
     test?: React.ReactNode;
     talleres?: React.ReactNode;
   };
+  originalOnClickOverrides?: {
+    session1?: () => void;
+    test?: () => void;
+    talleres?: () => void;
+  };
 };
 
 const SessionSelector: React.FC<SessionSelectorProps> = ({
@@ -80,6 +85,7 @@ const SessionSelector: React.FC<SessionSelectorProps> = ({
   headingText = "Reserva la sesión que encaja mejor contigo",
   variant = "career",
   originalTitleOverrides,
+  originalOnClickOverrides,
 }) => {
   const navigate = useNavigate();
   const sessions =
@@ -87,8 +93,9 @@ const SessionSelector: React.FC<SessionSelectorProps> = ({
       ? sessionsOriginal.map((session) => ({
           ...session,
           title: originalTitleOverrides?.[session.key as "session1" | "test" | "talleres"] ?? session.title,
+          customOnClick: originalOnClickOverrides?.[session.key as "session1" | "test" | "talleres"],
         }))
-      : sessionsCareer;
+      : sessionsCareer.map((s) => ({ ...s, customOnClick: undefined }));
   return (
     <section id="servicios" className="w-full flex flex-col items-center py-8">
       {showHeading && (
@@ -104,7 +111,7 @@ const SessionSelector: React.FC<SessionSelectorProps> = ({
               `bg-white rounded-2xl border border-color-logo-tres flex flex-col items-center p-8 w-80 h-[360px] cursor-pointer transition-shadow duration-300 font-ubuntu-regular shadow-md hover:shadow-[8px_8px_0_0_var(--color-logo-tres)]`
             }
             style={{ borderColor: "var(--color-logo-tres)" }}
-            onClick={session.onClick ? () => navigate(session.onClick) : undefined}
+            onClick={session.customOnClick ?? (session.onClick ? () => navigate(session.onClick) : undefined)}
           >
             <img src={session.img} alt={session.alt} className="mb-6 h-48" />
             <div className="text-xl font-bold text-center font-quicksand min-h-[72px] flex items-center justify-center">
