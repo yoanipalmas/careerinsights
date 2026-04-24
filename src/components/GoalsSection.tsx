@@ -7,6 +7,7 @@ const services = [
     description: "Para personas que necesitan claridad en sus decisiones profesionales",
     highlightColor: "text-red-400",
     borderColor: "border-red-200",
+    number: "1",
   },
   {
     highlight: "People",
@@ -14,6 +15,7 @@ const services = [
     description: "Diseña tu equipo, define roles y evita errores de contratación desde el inicio",
     highlightColor: "text-career",
     borderColor: "border-orange-100",
+    number: "2",
   },
   {
     highlight: "Soporte",
@@ -21,6 +23,7 @@ const services = [
     description: "Configuración, mantenimiento y resolución de incidencias para equipos.",
     highlightColor: "text-logo-dos",
     borderColor: "border-yellow-200",
+    number: "3",
   },
 ];
 
@@ -49,10 +52,10 @@ const GoalsSection: React.FC = () => (
             </span>
           </div>
           <span
-            className="absolute z-0 right-2 bottom-2 text-[90px] font-bold select-none pointer-events-none text-border-navbar opacity-20 md:text-[160px] md:right-[-10px] md:bottom-[-30px]"
+            className="absolute z-0 right-2 bottom-2 text-[90px] font-bold font-chloe select-none pointer-events-none text-border-navbar opacity-20 md:text-[160px] md:right-[-10px] md:bottom-[-30px]"
             style={{ lineHeight: "1" }}
           >
-            ?
+            {service.number}
           </span>
         </div>
       ))}
