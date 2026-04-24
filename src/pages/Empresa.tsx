@@ -127,13 +127,15 @@ const Empresa: React.FC = () => {
             El primer paso es una conversación inicial para entender el momento de la startup y ver si este tipo de acompañamiento encaja con sus necesidades actuales. A partir de ahí se define un formato de trabajo adaptado: proyecto puntual o acompañamiento durante una fase concreta de crecimiento.
           </p>
 
-          <button
-            type="button"
-            onClick={openModal}
-            className="mt-4 bg-logo-dos text-white font-bold px-8 py-3 rounded-full shadow hover:bg-logo-cuatro transition-colors"
-          >
-            Agendar sesión
-          </button>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={openModal}
+              className="mt-4 bg-logo-dos text-white font-bold px-8 py-3 rounded-full shadow hover:bg-logo-cuatro transition-colors"
+            >
+              Agendar sesión
+            </button>
+          </div>
         </div>
       </div>
 
