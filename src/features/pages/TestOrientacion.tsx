@@ -68,6 +68,14 @@ export default function TestOrientacion() {
   // --- Test ---
   const handleSelect = (value: string) => {
     setAnswers((prev) => ({ ...prev, [currentQid]: value }));
+    setTimeout(() => {
+      if (currentIndex < TOTAL_QUESTIONS - 1) {
+        setCurrentIndex((i) => i + 1);
+      } else {
+        setStep("result");
+        sendResults();
+      }
+    }, 350);
   };
 
   const handleNext = () => {
