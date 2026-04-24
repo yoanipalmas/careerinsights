@@ -41,6 +41,7 @@ export default function TestOrientacion() {
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
   const qids = Object.keys(QUESTIONS).map(Number);
   const currentQid = qids[currentIndex];
@@ -169,7 +170,9 @@ Aptitud dominante: ${topAptitude ? CATEGORIES[topAptitude].name : "N/A"} (${topA
         USER_ID
       );
       setSent(true);
-    } catch (_) {}
+    } catch (_) {
+      setEmailError(true);
+    }
 
     // Enviar al admin por Formspree
     try {
@@ -389,6 +392,8 @@ Aptitud dominante: ${topAptitude ? CATEGORIES[topAptitude].name : "N/A"} (${topA
             <p className="text-green-600 text-sm mb-4">✓ Hemos enviado tu resultado a {student.email}</p>
           ) : sending ? (
             <p className="text-gray-400 text-sm mb-4">Enviando resultados...</p>
+          ) : emailError ? (
+            <p className="text-orange-500 text-sm mb-4">⚠️ No pudimos enviar el correo. Descarga tus resultados en PDF.</p>
           ) : null}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
@@ -457,7 +462,13 @@ Aptitud dominante: ${topAptitude ? CATEGORIES[topAptitude].name : "N/A"} (${topA
           </div>
         )}
 
-        <div className="text-center">
+        <div className="flex flex-col sm:flex-row justify-center gap-4 print:hidden">
+          <button
+            onClick={() => window.print()}
+            className="px-8 py-3 bg-white border-2 border-logo-dos text-logo-dos hover:bg-orange-50 rounded-full font-semibold transition"
+          >
+            ⬇ Descargar resultados (PDF)
+          </button>
           <button
             onClick={handleRestart}
             className="px-8 py-3 bg-logo-dos hover:bg-logo-cuatro text-white rounded-full font-semibold transition"

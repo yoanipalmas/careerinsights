@@ -1,6 +1,13 @@
 @import "tailwindcss";
 @import './fonts.css';
 
+@media print {
+  nav, header, footer, .print\:hidden { display: none !important; }
+  body { background: white !important; }
+  .shadow-md, .shadow-sm { box-shadow: none !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
 html {
   scroll-behavior: smooth;
 }
