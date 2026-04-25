@@ -17,7 +17,7 @@ const outcomeItems = [
   { icon: "✦", text: "Más claridad sobre qué caminos profesionales tienen sentido para ti ahora" },
   { icon: "✦", text: "Un primer plan de acción realista: qué explorar, qué descartar, qué probar" },
   { icon: "✦", text: "Criterios propios para evaluar oportunidades" },
-  { icon: "✦", text: "Menos sensación de estar "perdido/a" frente al mercado laboral" },
+  { icon: "✦", text: "Menos sensación de estar 'perdido/a' frente al mercado laboral" },
 ];
 
 const formatItems = [
