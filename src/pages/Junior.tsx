@@ -5,26 +5,28 @@ import { submitFormspree } from "../utils/formspree";
 const initialForm = { name: "", email: "", message: "" };
 const validateEmail = (email: string) => /^\S+@\S+\.\S+$/.test(email);
 
+const DOT_COLORS = ["#ffb7a1", "#efbc68", "#919f89", "#85a9d2", "#ed7a6b"];
+
 const workItems = [
-  { icon: "🎯", text: "Claridad sobre intereses, fortalezas y áreas de desarrollo" },
-  { icon: "🗺️", text: "Análisis de posibles salidas profesionales según tu perfil" },
-  { icon: "💼", text: "Traducción de tu formación y experiencia en opciones reales" },
-  { icon: "🚀", text: "Primeros pasos para entrar al mercado laboral con criterio" },
-  { icon: "🏢", text: "Cómo funcionan las empresas más allá de los títulos de los puestos" },
+  { text: "Claridad sobre intereses, fortalezas y áreas de desarrollo" },
+  { text: "Análisis de posibles salidas profesionales según tu perfil" },
+  { text: "Traducción de tu formación y experiencia en opciones reales de trabajo" },
+  { text: "Primeros pasos para entrar al mercado laboral con cabeza" },
+  { text: "Cómo funcionan las empresas más allá de los títulos de los puestos" },
 ];
 
 const outcomeItems = [
-  { icon: "✦", text: "Más claridad sobre qué caminos profesionales tienen sentido para ti ahora" },
-  { icon: "✦", text: "Un primer plan de acción realista: qué explorar, qué descartar, qué probar" },
-  { icon: "✦", text: "Criterios propios para evaluar oportunidades" },
-  { icon: "✦", text: "Menos sensación de estar 'perdido/a' frente al mercado laboral" },
+  { text: "Más claridad sobre qué caminos profesionales tienen sentido para ti ahora" },
+  { text: "Un primer plan de acción realista: qué explorar, qué descartar, qué probar" },
+  { text: "Herramientas propias para evaluar oportunidades" },
+  { text: "Menos sensación de estar 'perdido/a' frente al mercado laboral" },
 ];
 
 const formatItems = [
-  { icon: "💻", label: "Online", desc: "Sesiones individuales desde donde estés" },
-  { icon: "📝", label: "Ejercicios", desc: "Reflexión y aterrizaje a la realidad del mercado" },
-  { icon: "📚", label: "Material", desc: "Apoyo para seguir trabajando entre sesiones" },
-  { icon: "🧭", label: "Seguimiento", desc: "Acompañamiento en la definición de siguientes pasos" },
+  { label: "Online" },
+  { label: "Ejercicios" },
+  { label: "Material" },
+  { label: "Seguimiento" },
 ];
 
 const Junior: React.FC = () => {
@@ -95,7 +97,7 @@ const Junior: React.FC = () => {
             Acompañamiento en el inicio<br className="hidden md:block" /> de tu carrera profesional
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Para recién graduados/as, estudiantes en último año o personas en transición hacia su primer empleo. Sin recetas. Con criterio.
+            Para recién graduados/as, estudiantes en último año o personas en transición hacia su primer empleo.
           </p>
           <button
             onClick={openModal}
@@ -115,18 +117,20 @@ const Junior: React.FC = () => {
           <p className="text-gray-500 text-center mb-10">Si te identificas con alguna de estas situaciones, sí.</p>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: "🧭", text: "No tienes claro por dónde empezar en el mercado laboral" },
-              { icon: "🔄", text: "Te cuesta traducir lo que has estudiado en opciones reales de trabajo" },
-              { icon: "🌀", text: "Te enfrentas al mercado con dudas, presión o demasiadas opiniones externas" },
+              { num: "01", text: "No tienes claro por dónde empezar en el mercado laboral", color: "#ffb7a1" },
+              { num: "02", text: "Te cuesta traducir lo que has estudiado en opciones reales de trabajo", color: "#efbc68" },
+              { num: "03", text: "Te enfrentas al mercado con dudas, presión o demasiadas opiniones externas", color: "#85a9d2" },
             ].map((item, i) => (
-              <div key={i} className="bg-[#FAF8F5] rounded-2xl p-6 flex flex-col items-center text-center gap-3 border border-[#EFBC68]/20">
-                <span className="text-3xl">{item.icon}</span>
+              <div key={i} className="bg-[#FAF8F5] rounded-2xl p-6 flex flex-col items-center text-center gap-3 border border-gray-100">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm" style={{ background: item.color }}>
+                  {item.num}
+                </div>
                 <p className="text-gray-700 font-medium">{item.text}</p>
               </div>
             ))}
           </div>
-          <p className="text-center text-[#6B8F71] font-semibold mt-8 text-lg">
-            Este acompañamiento está diseñado para ayudarte a tomar decisiones con más criterio y menos ruido.
+          <p className="text-center text-[#919f89] font-semibold mt-8 text-lg">
+            Este acompañamiento está diseñado para ayudarte a tomar decisiones con más claridad y menos ruido.
           </p>
         </div>
       </section>
@@ -143,13 +147,15 @@ const Junior: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-4">
             {workItems.map((item, i) => (
               <div key={i} className="bg-white rounded-2xl p-5 flex items-start gap-4 border border-gray-100 shadow-sm">
-                <span className="text-2xl mt-0.5">{item.icon}</span>
+                <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-white text-xs mt-0.5" style={{ background: DOT_COLORS[i] }}>
+                  {String(i + 1).padStart(2, "0")}
+                </div>
                 <p className="text-gray-700">{item.text}</p>
               </div>
             ))}
           </div>
           <p className="text-center text-gray-500 italic mt-8">
-            Este acompañamiento busca darte criterio propio para tomar decisiones, no una receta cerrada.
+            El objetivo no es darte una receta cerrada, sino que salgas con más claridad de la que entraste.
           </p>
         </div>
       </section>
@@ -163,10 +169,9 @@ const Junior: React.FC = () => {
           <p className="text-gray-500 text-center mb-10">Cercano, práctico y adaptado a tu momento.</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {formatItems.map((item, i) => (
-              <div key={i} className="flex flex-col items-center text-center gap-2 p-5 rounded-2xl bg-[#FAF8F5]">
-                <span className="text-3xl">{item.icon}</span>
-                <span className="font-bold text-[#EFBC68]">{item.label}</span>
-                <p className="text-sm text-gray-600">{item.desc}</p>
+              <div key={i} className="flex flex-col items-center text-center gap-3 p-5 rounded-2xl bg-[#FAF8F5]">
+                <div className="w-10 h-10 rounded-full" style={{ background: DOT_COLORS[i] }} />
+                <span className="font-bold text-[#2A2420]">{item.label}</span>
               </div>
             ))}
           </div>
@@ -200,8 +205,8 @@ const Junior: React.FC = () => {
           <p className="text-gray-500 text-center mb-10">Al finalizar el acompañamiento, deberías tener:</p>
           <div className="grid md:grid-cols-2 gap-4">
             {outcomeItems.map((item, i) => (
-              <div key={i} className="bg-white rounded-2xl p-5 flex items-start gap-4 border-l-4 border-[#6B8F71] shadow-sm">
-                <span className="text-[#6B8F71] font-bold text-xl mt-0.5">{item.icon}</span>
+              <div key={i} className="bg-white rounded-2xl p-5 flex items-start gap-4 border-l-4 shadow-sm" style={{ borderColor: DOT_COLORS[i] }}>
+                <div className="w-3 h-3 rounded-full flex-shrink-0 mt-1.5" style={{ background: DOT_COLORS[i] }} />
                 <p className="text-gray-700">{item.text}</p>
               </div>
             ))}
@@ -216,7 +221,11 @@ const Junior: React.FC = () => {
       <section className="bg-white py-16 px-6">
         <div className="max-w-2xl mx-auto">
           <div className="border-2 border-[#919F89]/30 rounded-3xl p-8 text-center">
-            <span className="text-3xl mb-4 block">⚠️</span>
+            <div className="flex justify-center gap-2 mb-6">
+              {DOT_COLORS.map((color, i) => (
+                <div key={i} className="w-3 h-3 rounded-full" style={{ background: color }} />
+              ))}
+            </div>
             <h2 className="text-xl font-bold text-[#2A2420] mb-4">Esto no es para ti si...</h2>
             <p className="text-gray-600 mb-4">
               Buscas una fórmula rápida o una respuesta cerrada sobre "qué estudiar" o "qué trabajo elegir", o esperas que alguien decida por ti y quieres soluciones mágicas sin reflexión ni trabajo personal.
