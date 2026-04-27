@@ -2,6 +2,7 @@ import "../styles/index.css"
 import HeroBanner from "../features/components/HeroBanner"
 import GoalsSection from "../components/GoalsSection"
 import AboutSection from "../components/AboutSection"
+import TestimonialsSection from "../components/TestimonialsSection"
 import SessionSelector from "../components/SessionSelector"
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -27,6 +28,7 @@ function Home() {
       <HeroBanner/>
       <GoalsSection />
       <AboutSection />
+      <TestimonialsSection />
       <SessionSelector/>
     </div>
   )
