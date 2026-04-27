@@ -11,16 +11,9 @@ const HeroBanner: React.FC = () => {
     };
     return (
       <div className="relative flex justify-center items-center min-h-[400px] md:min-h-[600px] bg-transparent overflow-visible">
-        <div className="relative z-10 bg-white rounded-[32px] md:rounded-[48px] border border-logo-dos shadow-lg flex flex-col md:flex-row items-center w-full max-w-6xl md:max-w-7xl min-h-[300px] px-4 md:px-12 py-4">
-          <div className="flex-1 flex justify-center items-center w-full md:w-[500px] md:h-[500px] overflow-hidden">
-            <img
-              src={banner}
-              alt="Ilustración"
-              className="w-full h-auto max-w-[800px] object-contain"
-            />
-          </div>
-          <div className="flex-1 flex flex-col justify-center items-start pl-0 md:pl-4">
-            <h1 className="text-2xl md:text-4xl font-bold mb-6 md:mb-8 leading-tight text-black">
+        <div className="relative z-10 bg-white rounded-[32px] md:rounded-[48px] border border-logo-dos shadow-lg flex flex-col md:flex-row items-center w-full max-w-6xl md:max-w-7xl px-4 md:px-12 py-8 md:py-4">
+          <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left order-2 md:order-1 pb-6 md:pb-0 pl-0 md:pl-4">
+            <h1 className="text-3xl md:text-4xl font-bold mb-5 md:mb-8 leading-tight text-black">
               TOMA MEJORES<br />
               DECISIONES DE<br />
               TALENTO
@@ -31,6 +24,13 @@ const HeroBanner: React.FC = () => {
             >
               Ver servicios
             </button>
+          </div>
+          <div className="flex-1 flex justify-center items-center w-full md:w-[500px] md:h-[500px] overflow-hidden order-1 md:order-2">
+            <img
+              src={banner}
+              alt="Ilustración"
+              className="w-full h-auto max-w-[320px] md:max-w-[800px] object-contain"
+            />
           </div>
         </div>
       </div>

@@ -103,18 +103,16 @@ const SessionSelector: React.FC<SessionSelectorProps> = ({
           {headingText}
         </h2>
       )}
-      <div className="flex flex-col md:flex-row md:flex-nowrap gap-8 justify-center items-center w-full">
+      <div className="flex flex-col md:flex-row md:flex-nowrap gap-6 justify-center items-center w-full">
         {sessions.map((session, idx) => (
           <div
             key={idx}
-            className={
-              `bg-white rounded-2xl border border-color-logo-tres flex flex-col items-center p-8 w-80 h-[360px] cursor-pointer transition-shadow duration-300 font-ubuntu-regular shadow-md hover:shadow-[8px_8px_0_0_var(--color-logo-tres)]`
-            }
+            className="bg-white rounded-2xl border border-color-logo-tres flex flex-col items-center p-6 md:p-8 w-full max-w-xs cursor-pointer transition-shadow duration-300 font-ubuntu-regular shadow-md hover:shadow-[8px_8px_0_0_var(--color-logo-tres)]"
             style={{ borderColor: "var(--color-logo-tres)" }}
             onClick={session.customOnClick ?? (session.onClick ? () => navigate(session.onClick) : undefined)}
           >
-            <img src={session.img} alt={session.alt} className="mb-6 h-48" />
-            <div className="text-xl font-bold text-center font-quicksand min-h-[72px] flex items-center justify-center">
+            <img src={session.img} alt={session.alt} className="mb-4 md:mb-6 h-36 md:h-48" />
+            <div className="text-xl font-bold text-center font-quicksand min-h-[56px] md:min-h-[72px] flex items-center justify-center">
               {session.title}
             </div>
           </div>
