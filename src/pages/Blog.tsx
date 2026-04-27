@@ -52,17 +52,6 @@ const Blog: React.FC = () => {
     <section className="w-full flex flex-col items-center gap-8 py-10 px-4 md:px-8">
       <div className="max-w-6xl w-full">
 
-        {/* Header */}
-        <div className="mb-10 text-center">
-          <p className="text-sm font-semibold tracking-widest uppercase text-[#EFBC68] mb-2">Blog</p>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#2A2420] mb-3">
-            Insights de carrera y talento
-          </h1>
-          <p className="text-gray-500 text-base max-w-xl mx-auto">
-            Artículos sobre desarrollo profesional, startups, entrevistas y el mercado laboral en España.
-          </p>
-        </div>
-
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {visiblePosts.map((post, idx) => (
