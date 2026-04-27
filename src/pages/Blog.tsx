@@ -3,104 +3,108 @@ import { Link } from "react-router-dom";
 import { getBlogPosts } from "../features/utils/getBlogPosts";
 import type { BlogPost } from "../features/utils/getBlogPosts";
 
+const PostCover = ({ post }: { post: BlogPost }) => {
+  const color = post.color || "#85a9d2";
+
+  // Decorative shapes for the cover
+  return (
+    <div
+      className="w-full h-44 md:h-52 rounded-2xl flex items-end p-5 relative overflow-hidden flex-shrink-0"
+      style={{ background: color }}
+    >
+      {/* Decorative circles */}
+      <div
+        className="absolute top-[-24px] right-[-24px] w-32 h-32 rounded-full opacity-20"
+        style={{ background: "#fff" }}
+      />
+      <div
+        className="absolute bottom-[-16px] left-[-16px] w-20 h-20 rounded-full opacity-15"
+        style={{ background: "#fff" }}
+      />
+      <div
+        className="absolute top-8 right-8 w-12 h-12 rounded-full opacity-25"
+        style={{ background: "#fff" }}
+      />
+      {/* Category tag */}
+      {post.category && (
+        <span
+          className="relative z-10 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full"
+          style={{ background: "rgba(255,255,255,0.3)", color: "#fff", backdropFilter: "blur(4px)" }}
+        >
+          {post.category}
+        </span>
+      )}
+    </div>
+  );
+};
+
 const Blog: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
-  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await getBlogPosts();
-        setPosts(data);
-      } catch (error) {
-        setLoadError(error instanceof Error ? error.message : "Error al cargar");
-      }
-    })();
+    getBlogPosts().then(setPosts);
   }, []);
 
   const visiblePosts = posts.slice(0, visibleCount);
 
-  const getDriveIdFromUrl = (url: string) => {
-    const matchFile = url.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
-    if (matchFile?.[1]) return matchFile[1];
-    const matchUc = url.match(/drive\.google\.com\/uc\?export=view&id=([^&]+)/i);
-    if (matchUc?.[1]) return matchUc[1];
-    const matchThumb = url.match(/drive\.google\.com\/thumbnail\?id=([^&]+)/i);
-    if (matchThumb?.[1]) return matchThumb[1];
-    const matchGuc = url.match(/lh3\.googleusercontent\.com\/d\/([^?]+)/i);
-    if (matchGuc?.[1]) return matchGuc[1];
-    return "";
-  };
-
   return (
-    <section className="w-full flex flex-col items-center gap-8 py-10 px-6">
+    <section className="w-full flex flex-col items-center gap-8 py-10 px-4 md:px-8">
       <div className="max-w-6xl w-full">
-        {loadError && (
-          <div className="mb-6 text-red-500 text-sm">{loadError}</div>
-        )}
 
-        <div className="space-y-8">
-          {visiblePosts.map((post, idx) => {
-            return (
-              <article
-                key={`${post.title}-${idx}`}
-                className="rounded-3xl border border-gray-200 bg-white shadow-sm p-6 md:p-8"
-              >
-                <div className="flex flex-col md:flex-row gap-8">
-                  <div className="md:w-1/2">
-                    <h2 className="text-2xl md:text-3xl font-bold text-blue-700 mb-4">
-                      {post.title}
-                    </h2>
-                    {post.image ? (
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-64 md:h-72 object-cover rounded-2xl border"
-                        onError={(e) => {
-                          const driveId = getDriveIdFromUrl(post.image || "");
-                          if (!driveId) return;
-                          const current = e.currentTarget.src;
-                          const thumb = `https://drive.google.com/thumbnail?id=${driveId}&sz=w1200`;
-                          const uc = `https://drive.google.com/uc?export=view&id=${driveId}`;
-                          if (current !== thumb) {
-                            e.currentTarget.src = thumb;
-                            return;
-                          }
-                          if (current !== uc) {
-                            e.currentTarget.src = uc;
-                          }
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-64 md:h-72 rounded-2xl border bg-gray-100 flex items-center justify-center text-gray-500">
-                        Imagen del post
-                      </div>
-                    )}
-                  </div>
+        {/* Header */}
+        <div className="mb-10 text-center">
+          <p className="text-sm font-semibold tracking-widest uppercase text-[#EFBC68] mb-2">Blog</p>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#2A2420] mb-3">
+            Insights de carrera y talento
+          </h1>
+          <p className="text-gray-500 text-base max-w-xl mx-auto">
+            Artículos sobre desarrollo profesional, startups, entrevistas y el mercado laboral en España.
+          </p>
+        </div>
 
-                  <div className="md:w-1/2 flex flex-col justify-between">
-                    <p className="text-gray-700 text-lg mb-6">{post.excerpt}</p>
-                    <Link
-                      to={`/blog/${post.slug}`}
-                      className="bg-[#ffb7a1] hover:bg-[#ed7a6b] text-white font-semibold px-6 py-3 rounded-lg shadow-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-pink-500 inline-block text-center w-fit"
-                    >
-                      Leer más
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {visiblePosts.map((post, idx) => (
+            <Link
+              key={`${post.slug}-${idx}`}
+              to={`/blog/${post.slug}`}
+              className="group bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col overflow-hidden"
+            >
+              {/* Cover */}
+              {post.image ? (
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-44 md:h-52 object-cover flex-shrink-0"
+                />
+              ) : (
+                <PostCover post={post} />
+              )}
+
+              {/* Body */}
+              <div className="flex flex-col flex-1 p-5 gap-3">
+                <h2 className="text-base md:text-lg font-bold text-[#2A2420] leading-snug group-hover:text-[#EFBC68] transition-colors">
+                  {post.title}
+                </h2>
+                <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3">
+                  {post.excerpt}
+                </p>
+                <span className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-[#ed7a6b] group-hover:gap-2 transition-all">
+                  Leer artículo <span className="text-base">→</span>
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
 
         {posts.length > visibleCount && (
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-10">
             <button
-              className="px-4 py-2 bg-gray-900 text-white rounded-lg"
+              className="px-8 py-3 bg-[#2A2420] text-white rounded-full font-semibold hover:bg-[#EFBC68] hover:text-[#2A2420] transition-colors"
               onClick={() => setVisibleCount((c) => Math.min(c + 6, posts.length))}
             >
-              Cargar más
+              Cargar más artículos
             </button>
           </div>
         )}
