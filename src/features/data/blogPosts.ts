@@ -13,6 +13,59 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: "Despides por aquí, contratas por allá. Y en medio, el talento que tiraste a la basura",
+    slug: "despides-por-aqui-contratas-por-alla",
+    category: "Estrategia de Personas",
+    color: "#6B8F71",
+    url: "/blog/despides-por-aqui-contratas-por-alla",
+    excerpt:
+      "Llevamos meses escuchando lo mismo: despidos, despidos por IA, EREs. Y al rato, esa misma empresa está publicando veinte posiciones para contratar. Este patrón no es casualidad y nadie se está parando a analizarlo con la profundidad que merece.",
+    published: true,
+    content: `## Despides por aquí, contratas por allá. Y en medio, el talento que tiraste a la basura
+
+*Artículo publicado en la newsletter de Manfred · 30 de abril de 2026*
+
+Llevamos desde enero — o quizás desde antes — escuchando por todas partes lo mismo: despidos, despidos por IA, despidos por producción, EREs. Y al rato, esa misma empresa está publicando veinte posiciones para contratar. Este patrón no es casualidad y nadie se está parando a analizarlo con la profundidad que merece.
+
+Cuando una empresa despide, la narrativa siempre apunta al mismo sitio: el mercado cambió, la estructura ya no encaja, necesitamos perfiles diferentes. Y puede que sea verdad. Pero hay una pregunta que casi nadie se hace antes de firmar los despidos: ¿estamos seguros de que estas personas no pueden hacer otra cosa dentro de la empresa? Porque en la mayoría de los casos que he visto, la respuesta honesta es que no lo sabemos, y que tampoco nos hemos parado a comprobarlo. Se despide por rol, no por persona. Y eso tiene un coste enorme que no se está calculando.
+
+## Lo que le cuesta un despido a una empresa — de verdad
+
+Hay una cifra que se repite en los estudios de recursos humanos: sustituir a un empleado cuesta entre el **50% y el 200% de su salario anual**, y dependiendo del nivel de especialización puede ser más.
+
+Eso incluye el proceso de selección, la incorporación, el tiempo que tarda la nueva persona en rendir al nivel de quien se fue y todo el conocimiento institucional que se perdió por el camino. Y aun así, las empresas siguen eligiendo el despido como primera opción en lugar de última. ¿Por qué? Porque es más fácil de justificar en un board, porque los números salen limpios en el trimestre y porque nadie pregunta por el coste a largo plazo.
+
+## El ejemplo de IKEA
+
+Hace unos años, IKEA se enfrentó a algo que todas las empresas de retail conocen bien: la automatización y los cambios en el modelo de negocio estaban dejando obsoletos ciertos puestos.
+
+La respuesta obvia habría sido lo de siempre — recortes, ERE, comunicado corporativo sobre la difícil coyuntura. IKEA hizo otra cosa: decidió formar a parte de su plantilla como diseñadores de interiores, un perfil que la empresa necesitaba y que el mercado demandaba cada vez más.
+
+El resultado fueron personas que ya conocían la cultura, los productos y los valores de la empresa, que no necesitaban incorporarse desde cero y que tenían un vínculo real con la marca.
+
+Pocas empresas están dispuestas a invertir: tiempo, estrategia y una visión de las personas que va más allá del trimestre.
+
+## El coste que no aparece en las hojas de cálculo
+
+Hay otro coste que tampoco aparece en las hojas de cálculo: lo que piensan de ti cuando te vas. Las personas despedidas hablan con sus contactos, en Glassdoor, en LinkedIn, en conversaciones de café que nunca llegarás a escuchar. Y las personas que se quedan también observan, porque cada despido masivo es un mensaje interno sobre cómo trata la empresa a su gente cuando las cosas se complican.
+
+Para mí, la reconversión de talento es una declaración de valores, no es solo una decisión económica; se traduce en: creemos en las personas que tenemos, estamos dispuestos a invertir en ellas y no somos desechables entre nosotros. Ese mensaje vale más que cualquier campaña de employer branding que puedas contratar después.
+
+## Las preguntas que merece una respuesta honesta
+
+No digo que los despidos nunca sean necesarios — a veces lo son. Pero antes de llegar ahí, hay preguntas que merecen una respuesta honesta:
+
+- ¿Sabemos realmente qué puede hacer cada persona de este equipo más allá de su descripción de puesto actual?
+- ¿Hemos identificado qué perfiles vamos a necesitar en los próximos doce meses?
+- ¿Hemos cruzado esas dos listas?
+
+En la mayoría de las empresas con las que he trabajado, la respuesta a las tres preguntas es no. Y eso es un problema de estrategia de personas que tiene RRHH hoy en día.
+
+Una persona que lleva cinco años en tu empresa sabe cosas que no están escritas en ningún sitio — conoce los procesos, la cultura, los clientes, los atajos y los errores que ya se cometieron.
+
+Eso tiene un valor enorme y se tira a la basura cada vez que se firma un despido sin haberse preguntado primero si había otra salida. No todas las empresas pueden ser IKEA, pero todas pueden hacerse las preguntas correctas antes de tomar la decisión más fácil.`,
+  },
+  {
     title: "Cómo diseñar tu primer equipo en una startup (antes de contratar)",
     slug: "como-disenar-tu-primer-equipo-en-una-startup",
     category: "Startups",
